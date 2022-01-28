@@ -1,0 +1,35 @@
+version: "3.7"
+services: 
+  
+  db:
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_DB: wikidb
+      POSTGRES_PASSWORD: _Admin#1
+      POSTGRES_USER: wikiuser
+    restart: unless-stopped
+    # ports:
+    #   - "5439:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  
+  wiki:
+    image: requarks/wiki:2.4
+    depends_on:
+      - db
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: wikiuser
+      DB_PASS: _Admin#1
+      DB_NAME: wikidb
+      # SSL_ACTIVE: 1
+      # LETSENCRYPT_DOMAIN: wiki.dominio.com.br
+      # LETSENCRYPT_EMAIL: admin@dominio.com.br
+    restart: unless-stopped
+    ports:
+      - "80:3000"
+
+volumes:
+  db-data:
